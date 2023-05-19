@@ -11,19 +11,19 @@ const Footer = () => {
     setSelected(page);
     switch(page){
       case 1: {
-        navigation.navigate("Swipe")
+        navigation.navigate("Swipe" as never)
         break;
       }
       case 2: {
-        navigation.navigate("Contact")
+        navigation.navigate("Contact" as never)
         break;
       }
       case 3: {
-        navigation.navigate("Profile")
+        navigation.navigate("Profile" as never)
         break;
       }
       default: {
-        navigation.navigate("Swipe")
+        navigation.navigate("Swipe" as never)
         break;
       }
     }
