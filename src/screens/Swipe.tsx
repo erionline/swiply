@@ -1,8 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
 import { Button, Center, Heading, NativeBaseProvider } from "native-base";
 import { Alert } from "react-native";
 
-const Profile = () => {
+const Swipe = () => {
     return (
         <NativeBaseProvider>
             <Center flex={1}>
@@ -15,4 +14,4 @@ const Profile = () => {
     )
 };
 
-export default Profile;
+export default Swipe;
