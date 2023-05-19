@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert } from 'react-native';
-import { NativeBaseProvider, Box, Button, Center, Heading } from "native-base";
+import { NativeBaseProvider, Button, Center, Heading } from "native-base";
 
 const App = () => {
   return (
@@ -11,6 +11,7 @@ const App = () => {
           Press me
         </Button>
       </Center>
+      <StatusBar style="auto" />
     </NativeBaseProvider>
   );
 }
