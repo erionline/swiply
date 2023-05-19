@@ -1,12 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
+import { Alert } from 'react-native';
+import { NativeBaseProvider, Box, Button, Center, Heading } from "native-base";
 
 const App = () => {
   return (
-    <View>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NativeBaseProvider>
+      <Center flex={1}>
+        <Heading>Hello world</Heading>
+        <Button onPress={() => Alert.alert('Hello world')}>
+          Press me
+        </Button>
+      </Center>
+    </NativeBaseProvider>
   );
 }
 
