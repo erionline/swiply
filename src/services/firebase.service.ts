@@ -11,7 +11,6 @@ export const signUp = (email: string, name: string, surName: string, bio: string
         const user = credentials.user;
   
         const userRef = doc(firestore, "users", user.uid);
-        console.log(userRef);
         await setDoc(userRef, {
           name: name,
           surName: surName,
