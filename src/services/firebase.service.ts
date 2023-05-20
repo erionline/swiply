@@ -1,12 +1,24 @@
-import firebase from 'firebase/app';
-import firestore from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 export const signUp = (email: string, password: string): Promise<UserCredential> => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    try {
+        const credentials = createUserWithEmailAndPassword(auth, email, password);
+        console.log(credentials);
+        return credentials
+    } catch (error) {
+        console.error("Erreur lors de la connexion :", error);
+        throw error; // Rejeter l'erreur pour qu'elle puisse être traitée à un niveau supérieur si nécessaire        
+    }
 }
 
 export const logIn = (email: string, password: string): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, email, password);
+    try {
+        const credentials = signInWithEmailAndPassword(auth, email, password);
+        console.log(credentials);
+        return credentials
+    } catch (error) {
+        console.error("Erreur lors de la connexion :", error);
+        throw error; // Rejeter l'erreur pour qu'elle puisse être traitée à un niveau supérieur si nécessaire        
+    }
 }

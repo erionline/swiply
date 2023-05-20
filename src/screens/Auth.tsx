@@ -36,6 +36,11 @@ const Auth = () => {
   };
 
   const onAuthHandler = () => {
+    console.log("Login : " + login);
+    console.log("email : " + email + " password : " + password + " passwordConfirm : " + passwordConfirm);
+    if(password != "") {
+      
+    }
     switch (login) {
       case false:
         if (password === passwordConfirm) {
@@ -91,7 +96,7 @@ const Auth = () => {
             <Input
               type="password"
               onChangeText={(textEntered) =>
-                onPressHandler(textEntered, "passwordConfirm")
+                onPressHandler(textEntered, "password")
               }
             />
           </FormControl>

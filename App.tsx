@@ -7,6 +7,7 @@ import Profile from "./src/screens/Profile";
 import Contact from "./src/screens/Contact";
 import Swipe from "./src/screens/Swipe";
 import Auth from "./src/screens/Auth";
+import React from "react";
 
 const Stack = createNativeStackNavigator();
 
