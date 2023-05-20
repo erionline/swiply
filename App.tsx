@@ -1,18 +1,35 @@
 import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider } from "native-base";
-import { NavigationContainer, createNavigationContainerRef, useNavigation, useNavigationState, useRoute } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Footer from "./src/components/Footer";
 import Profile from "./src/screens/Profile";
 import Contact from "./src/screens/Contact";
 import Swipe from "./src/screens/Swipe";
 import Auth from "./src/screens/Auth";
-import React from "react";
+import React, { useEffect } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
-const App = ({ NavigationContainerRef }) => {
-  const route = NavigationContainerRef;
+const App = () => {
+  const [route, setRoute] = React.useState(false);
+
+  useEffect(() => {
+    const checkAsyncStorage = async () => {
+      const token = await AsyncStorage.getItem('token');
+      const profile = await AsyncStorage.getItem('profile');
+  
+      if (token && profile) {
+        setRoute(true);
+      } else {
+        setRoute(false);
+      }
+    };
+  
+    checkAsyncStorage();
+  }, []);
+
   console.log(route);
   return (
     <NativeBaseProvider>
