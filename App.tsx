@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider } from "native-base";
-import { NavigationContainer, createNavigationContainerRef, useNavigation } from "@react-navigation/native";
+import { NavigationContainer, createNavigationContainerRef, useNavigation, useNavigationState, useRoute } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Footer from "./src/components/Footer";
 import Profile from "./src/screens/Profile";
@@ -10,13 +10,15 @@ import Auth from "./src/screens/Auth";
 
 const Stack = createNativeStackNavigator();
 
-const App = () => {
+const App = ({ NavigationContainerRef }) => {
+  const route = NavigationContainerRef;
+  console.log(route);
   return (
     <NativeBaseProvider>
       <Box
         flex={1}
       >
-      <NavigationContainer>
+      <NavigationContainer >
           <Stack.Navigator>
             <Stack.Screen
               options={{ headerShown: false }}
@@ -39,7 +41,8 @@ const App = () => {
               component={Profile}
             />
           </Stack.Navigator>
-          <Footer/>
+          {route &&
+          <Footer/>}
           <StatusBar style="auto" />
         </NavigationContainer>
       </Box>
