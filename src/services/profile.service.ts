@@ -1,4 +1,3 @@
-import { auth, firestore, storage } from "../lib/firebase";
 import { updatePassword, updateProfile } from "firebase/auth";
 import {
   collection,
@@ -12,7 +11,7 @@ import {
   where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { pickerImage } from "./firebase.service";
+import { auth, firestore, pickerImage, storage } from "./firebase.service";
 
 export const getProfile = async (uid) => {
   return new Promise(async (resolve, reject) => {
@@ -73,30 +72,20 @@ export const getRandomProfile = async () => {
   });
 };
 
-export const updateProfileDetails = async ({ name, bio, password }) => {
+export const updateProfileDetails = async (props: { name: string, bio: string, password: string }) => {
   try {
     const user = auth.currentUser;
     const userRef = doc(firestore, "users", user.uid);
-    const userSnapshot = await getDoc(userRef);
-    if (userSnapshot.exists()) {
-      const userData = userSnapshot.data();
 
-      if (
-        (name && name.trim() !== "") ||
-        (bio && bio.trim() !== "") ||
-        bio !== userData.bio ||
-        name !== userData.name
-      ) {
-        await updateDoc(userRef, {
-          name: name,
-          bio: bio,
-        });
-      }
+    await updateDoc(userRef, {
+      name: props.name.trim(),
+      bio: props.bio.trim(),
+    });
+
+    if (props.password.length > 6) {
+      updatePassword(user, props.password);
     }
 
-    if (password != "" && password.length > 6) {
-      updatePassword(user, password);
-    }
   } catch (error) {
     console.error("Erreur lors de la connexion :", error);
     throw error;
@@ -123,7 +112,7 @@ export const createPost = async (title: string, content: string) => {
   }
 };
 
-export const fetchPostsByUser = async (uid) => {
+export const fetchPostsByUser = async (uid: string) => {
   const postsCollection = collection(firestore, "posts");
   const q = query(postsCollection, where("idUser", "==", uid));
 
