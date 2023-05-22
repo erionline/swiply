@@ -10,12 +10,12 @@ import {
   Text,
   Center,
 } from "native-base";
-import React, { useEffect } from "react";
+import React from "react";
 import { logIn, signUp } from "../services/auth.service";
 import { useNavigation } from "@react-navigation/native";
 
 const Auth = () => {
-  const [login, setLogin] = React.useState(false);
+  const [login, setLogin] = React.useState(true);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
@@ -56,7 +56,7 @@ const Auth = () => {
         } else {
           try {
             const sign = await signUp(email, name, bio, password);
-            if(sign) {
+            if (sign) {
               setLogin(true);
             }
           } catch (error) {
@@ -67,7 +67,7 @@ const Auth = () => {
       case true:
         try {
           const log1 = await logIn(email, password);
-          if(log1) {
+          if (log1) {
             navigation.navigate("Swipe" as never);
           }
         } catch (error) {
@@ -77,7 +77,7 @@ const Auth = () => {
       default:
         try {
           const log2 = await logIn(email, password);
-          if(log2) {
+          if (log2) {
             navigation.navigate("Swipe" as never);
           }
         } catch (error) {
@@ -132,7 +132,7 @@ const Auth = () => {
           fontWeight="medium"
           size="xs"
         >
-          Socialise en matchant
+          Socialise en un like
         </Heading>
 
         <VStack space={3} mt="5">

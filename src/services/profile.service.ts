@@ -1,4 +1,4 @@
-import { auth, firestore } from "../lib/firebase";
+import { auth, firestore, storage } from "../lib/firebase";
 import { updatePassword } from "firebase/auth";
 import {
   collection,
@@ -11,6 +11,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { Alert, Linking, Platform } from "react-native";
+import { ref, uploadBytes } from "firebase/storage";
+import { pickerImage } from "./firebase.service";
+
 
 export const getProfile = async (uid) => {
   return new Promise(async (resolve, reject) => {
@@ -44,8 +48,8 @@ export const updateProfile = async ({ name, bio, password }) => {
       const userData = userSnapshot.data();
 
       if (
-        name !== "" ||
-        bio !== "" ||
+        (name && name.trim() !== "") ||
+        (bio && bio.trim() !== "") ||
         bio !== userData.bio ||
         name !== userData.name
       ) {
@@ -115,4 +119,21 @@ export const fetchPostsByUser = async (uid) => {
 
     console.error("Error fetching posts by user:", error);
   }
+};
+
+export const updateProfileImage = async (uid: String) => {
+  const result = await pickerImage();
+
+  if (!result) {
+    // Handle the case where pickerImage() returns void
+    return;
+  }
+
+  const { uri, extension } = result;
+
+  const image = await fetch(uri);
+  const bytes = await image.blob();
+
+  const filesRef = ref(storage, `avatar-${uid}.${extension}`);
+  await uploadBytes(filesRef, bytes);
 };
