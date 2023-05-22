@@ -1,5 +1,5 @@
 import { auth, firestore, storage } from "../lib/firebase";
-import { updatePassword } from "firebase/auth";
+import { updatePassword, updateProfile } from "firebase/auth";
 import {
   collection,
   doc,
@@ -11,10 +11,8 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Alert, Linking, Platform } from "react-native";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { pickerImage } from "./firebase.service";
-
 
 export const getProfile = async (uid) => {
   return new Promise(async (resolve, reject) => {
@@ -39,7 +37,43 @@ export const getProfile = async (uid) => {
   });
 };
 
-export const updateProfile = async ({ name, bio, password }) => {
+export const getRandomProfile = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const usersRef = collection(firestore, "users");
+      const querySnapshot = await getDocs(usersRef);
+      const usersData = [];
+
+      querySnapshot.forEach(async (doc) => {
+        const userFirstPartData = doc.data();
+        const queryUser = await getDocs(query(usersRef, where("uri", "==", doc.id)));
+        if (!queryUser.empty) {
+          const userDoc = querySnapshot.docs[0];
+          const userSecondPartData = userDoc.data();
+          usersData.push({
+            id: doc.id,
+            photoURL: userSecondPartData.photoURL,
+            name: userFirstPartData.name,
+            bio: userFirstPartData.bio,
+          });
+        }
+      });
+
+      if (usersData.length > 0) {
+        const randomIndex = Math.floor(Math.random() * usersData.length);
+        const randomProfile = usersData[randomIndex];
+        resolve(randomProfile);
+      } else {
+        resolve(null);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la connexion :", error);
+      reject(error);
+    }
+  });
+};
+
+export const updateProfileDetails = async ({ name, bio, password }) => {
   try {
     const user = auth.currentUser;
     const userRef = doc(firestore, "users", user.uid);
@@ -65,16 +99,6 @@ export const updateProfile = async ({ name, bio, password }) => {
     }
   } catch (error) {
     console.error("Erreur lors de la connexion :", error);
-    throw error;
-  }
-};
-
-export const updateProfileDetails = async (docRef, newDetails) => {
-  try {
-    await updateDoc(docRef, newDetails);
-    console.log("Profile details updated successfully");
-  } catch (error) {
-    console.error("Erreur de mise à jour des détails du profil :", error);
     throw error;
   }
 };
@@ -116,12 +140,11 @@ export const fetchPostsByUser = async (uid) => {
     console.log("Posts by user", uid, ":", posts);
     return posts;
   } catch (error) {
-
     console.error("Error fetching posts by user:", error);
   }
 };
 
-export const updateProfileImage = async (uid: String) => {
+export const updateProfileImage = async (user) => {
   const result = await pickerImage();
 
   if (!result) {
@@ -134,6 +157,10 @@ export const updateProfileImage = async (uid: String) => {
   const image = await fetch(uri);
   const bytes = await image.blob();
 
-  const filesRef = ref(storage, `avatar-${uid}.${extension}`);
+  const filesRef = ref(storage, `avatar-${user.uid}.${extension}`);
   await uploadBytes(filesRef, bytes);
+
+  const imageURL = await getDownloadURL(filesRef);
+
+  await updateProfile(user, { photoURL: imageURL });
 };
