@@ -28,7 +28,6 @@ const Swipe = () => {
   }, []);
 
   return (
-    <NativeBaseProvider>
       <ScrollView flex={1}>
         <Center>
           {user && (
@@ -79,7 +78,6 @@ const Swipe = () => {
           )}
         </Center>
       </ScrollView>
-    </NativeBaseProvider>
   );
 };
 

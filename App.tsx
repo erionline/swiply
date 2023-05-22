@@ -29,7 +29,6 @@ const App = () => {
 
   return (
     <NativeBaseProvider>
-      <Box flex={1}>
         <NavigationContainer>
           <Stack.Navigator>
             {!user ?
@@ -59,7 +58,6 @@ const App = () => {
           {user ? <Footer /> : ""}
         </NavigationContainer>
         <StatusBar style="auto" />
-      </Box>
     </NativeBaseProvider>
   );
 };
