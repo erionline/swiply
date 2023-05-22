@@ -1,4 +1,5 @@
 import { Button, Center, Heading, NativeBaseProvider } from "native-base";
+import React from "react";
 import { Alert } from "react-native";
 
 const Contact = () => {

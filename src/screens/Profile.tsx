@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -16,19 +16,24 @@ import {
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { logOut } from "../services/auth.service";
 import {
-  createPost,
-  fetchPostsByUser,
-  updateProfileImage,
   updateProfileDetails,
   getUserProfile,
+  updateProfileImage,
+  createPost,
+  fetchPostsByUser,
 } from "../services/profile.service";
 import { auth } from "../services/firebase.service";
 import { useAtom } from "jotai";
-import { UserProfile, userAtom } from "../utils/entities/user.entity";
+import { UserPost, UserProfile, userAtom } from "../utils/entities/user.entity";
 
-const Profile = () => {  
+const Profile = () => {
   const [editMode, setEditMode] = React.useState(false);
   const [user, setUser] = useAtom(userAtom);
+  const [posts, setPosts] = useState<UserPost[]>([]);
+  const [currentPost, setCurrentPost] = useState<{
+    title: string;
+    content: string;
+  }>();
 
   const onLogOutHandler = () => {
     logOut();
@@ -38,10 +43,16 @@ const Profile = () => {
     const fetchUserProfile = async () => {
       const profile = await getUserProfile(auth.currentUser.uid);
       setUser(profile as UserProfile);
-    }
+    };
+    const fetchUserPost = async () => {
+      const posts = await fetchPostsByUser(auth.currentUser.uid);
+      setPosts(posts as UserPost[]);
+    };
+    console.log(posts);
 
+    fetchUserPost();
     fetchUserProfile();
-  }, [user]);
+  }, [editMode, currentPost]);
 
   return (
     <NativeBaseProvider>
@@ -54,18 +65,18 @@ const Profile = () => {
               md: "flex-start",
             }}
           >
-            {/* {actualUser && actualUser?.photoURL && (
+            {user && user.picture && (
               <Avatar
                 bg="green.500"
                 alignSelf="center"
                 size="xs"
                 source={{
-                  uri: actualUser.photoURL,
+                  uri: user.picture,
                 }}
               >
                 AJ
               </Avatar>
-            )} */}
+            )}
             {user ? (
               editMode ? (
                 <>
@@ -74,10 +85,9 @@ const Profile = () => {
                     <Input
                       width={200}
                       placeholder={user.name}
-                      onChangeText={(textEntered) => setUser({...user, name: textEntered}) }
-                      // onChangeText={(textEntered) =>
-                      //   onPressHandler(textEntered, "name")
-                      // }
+                      onChangeText={(textEntered) =>
+                        setUser({ ...user, name: textEntered })
+                      }
                     />
                   </FormControl>
                   <FormControl>
@@ -85,10 +95,9 @@ const Profile = () => {
                     <Input
                       width={200}
                       placeholder={user.bio}
-                      onChangeText={(textEntered) => setUser({...user, bio: textEntered}) }
-                      // onChangeText={(textEntered) =>
-                      //   onPressHandler(textEntered, "bio")
-                      // }
+                      onChangeText={(textEntered) =>
+                        setUser({ ...user, bio: textEntered })
+                      }
                     />
                   </FormControl>
                   <FormControl>
@@ -97,16 +106,15 @@ const Profile = () => {
                       type="password"
                       width={200}
                       placeholder="********"
-                      onChangeText={(textEntered) => setUser({...user, password: textEntered}) }
-                      // onChangeText={(textEntered) =>
-                      //   onPressHandler(textEntered, "password")
-                      // }
+                      onChangeText={(textEntered) =>
+                        setUser({ ...user, password: textEntered })
+                      }
                     />
                   </FormControl>
                   <Button
-                    // onPress={() => {
-                    //   updateProfileImage(actualUser);
-                    // }}
+                    onPress={() => {
+                      updateProfileImage(auth.currentUser);
+                    }}
                     width={200}
                     leftIcon={
                       <Icon
@@ -140,7 +148,9 @@ const Profile = () => {
             <Button width={200} onPress={() => setEditMode(!editMode)}>
               {editMode ? "Fermer l'editeur" : "Editer votre profile"}
             </Button>
-            <Button width={200} onPress={() => onLogOutHandler()}>Deconnexion</Button>
+            <Button width={200} onPress={() => onLogOutHandler()}>
+              Deconnexion
+            </Button>
           </VStack>
           <VStack>
             <FormControl>
@@ -148,9 +158,9 @@ const Profile = () => {
               <Input
                 placeholder="coucou"
                 w="50%"
-                // onChangeText={(textEntered) =>
-                //   onPressHandler(textEntered, "title")
-                // }
+                onChangeText={(textEntered) =>
+                  setCurrentPost({ ...currentPost, title: textEntered })
+                }
               />
             </FormControl>
             <FormControl marginY="5">
@@ -162,29 +172,25 @@ const Profile = () => {
                   w="75%"
                   maxW="300"
                   autoCompleteType={undefined}
-                  // onChangeText={(textEntered) =>
-                  //   onPressHandler(textEntered, "content")
-                  // }
+                  onChangeText={(textEntered) =>
+                    setCurrentPost({ ...currentPost, content: textEntered })
+                  }
                 />
               </Box>
             </FormControl>
-            <Button 
-              // onPress={() => createPost(title, content)}
-            >
+            <Button onPress={() => createPost(currentPost)}>
               Terminer votre poste :D
             </Button>
           </VStack>
           <VStack marginY="5">
-            {/* {posts &&
-              posts.map((post) => (
-                <Box key={post.id} borderWidth="1" marginY="5">
+            {posts &&
+              posts.map((post, i) => (
+                <Box key={i} borderWidth="1" marginY="5">
                   <Text fontWeight="bold">{post.title}</Text>
                   <Text>{post.content}</Text>
-                  <Text color="gray.500">
-                    {post.timestamp.toDate().toString()}
-                  </Text>
+                    <Text color="gray.500">{post.date.toLocaleString()}</Text>
                 </Box>
-              ))} */}
+              ))}
           </VStack>
         </Center>
       </ScrollView>

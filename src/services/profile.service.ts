@@ -69,7 +69,7 @@ export const updateProfileDetails = async (profile: UserProfile) => {
   }
 };
 
-export const createPost = async (title: string, content: string) => {
+export const createPost = async ({title, content}) => {
   try {
     if (title && content) {
       const postsCollection = collection(firestore, "posts");
@@ -97,7 +97,7 @@ export const fetchPostsByUser = async (uid: string) => {
   const postsCollection = collection(firestore, "posts");
 
   try {
-    const querySnapshot = await getDocs(query(postsCollection, where("idUser", "==", uid)));
+    const querySnapshot = await getDocs(query(postsCollection, where("authorId", "==", uid)));
     let posts = [];
 
     querySnapshot.forEach((doc) => {
