@@ -1,42 +1,14 @@
-import { updatePassword, updateProfile } from "firebase/auth";
+import { User, updatePassword, updateProfile } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, firestore, pickerImage, storage } from "./firebase.service";
+import { UserPost, UserProfile, userAtom } from "../utils/entities/user.entity";
+import { useAtom } from "jotai";
 
-import { atom, useAtom } from 'jotai'
-import { UserProfile } from "../utils/types";
-
-export const userAtom = atom<UserProfile>({
-  id: "",
-  name: "",
-  picture: "",
-  bio: "",
-  email: "",
-  password: "",
-  posts: [],
-})
-
-export const getProfile = async (uid) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const userRef = doc(firestore, "users", uid);
-
-      const userSnapshot = await getDoc(userRef);
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-        const profile = {
-          name: userData.name,
-          bio: userData.bio,
-        };
-        resolve(profile);
-      } else {
-        resolve(null);
-      }
-    } catch (error) {
-      console.error("Erreur lors de la connexion :", error);
-      reject(error);
-    }
-  });
+export const getUserProfile = async (uid: string) => {
+  const queryUser = doc(firestore, "users", uid);
+  const userDoc = await getDoc(queryUser)
+  return userDoc.exists() ? userDoc.data() : null;
 };
 
 export const getRandomProfile = async () => {
@@ -69,24 +41,26 @@ export const getRandomProfile = async () => {
         resolve(null);
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion :", error);
+      console.error("Erreur lors de la connexion:", error);
       reject(error);
     }
   });
 };
 
-export const updateProfileDetails = async (props: { name: string, bio: string, password: string }) => {
+export const updateProfileDetails = async (profile: UserProfile) => {
   try {
     const user = auth.currentUser;
     const userRef = doc(firestore, "users", user.uid);
 
     await updateDoc(userRef, {
-      name: props.name.trim(),
-      bio: props.bio.trim(),
+      name: profile.name.trim(),
+      bio: profile.bio.trim(),
     });
 
-    if (props.password.length > 6) {
-      updatePassword(user, props.password);
+    if (profile.password && profile.password.length > 6) {
+      const [profile, setProfile] = useAtom(userAtom);
+      setProfile({ ...profile, password: "" });
+      updatePassword(user, profile.password);
     }
 
   } catch (error) {
@@ -101,58 +75,65 @@ export const createPost = async (title: string, content: string) => {
       const postsCollection = collection(firestore, "posts");
       const postRef = doc(postsCollection);
       const user = auth.currentUser;
-      const postData = {
-        idUser: user?.uid,
+
+      const postData: UserPost = {
+        authorId: user?.uid,
         title: title,
         content: content,
-        timestamp: serverTimestamp(),
+        date: new Date(),
+        likes: 0,
+        comments: [],
       };
+
       await setDoc(postRef, postData);
-      console.log("Post created");
+      console.log("User post has been created.");
     }
   } catch (error) {
-    console.error("Error creating post:", error);
+    console.error("Error while creating user post: ", error);
   }
 };
 
 export const fetchPostsByUser = async (uid: string) => {
   const postsCollection = collection(firestore, "posts");
-  const q = query(postsCollection, where("idUser", "==", uid));
 
   try {
-    const querySnapshot = await getDocs(q);
-    const posts = [];
+    const querySnapshot = await getDocs(query(postsCollection, where("idUser", "==", uid)));
+    let posts = [];
 
     querySnapshot.forEach((doc) => {
       const post = doc.data();
       post.id = doc.id;
-      posts.push(post);
+      posts = [...posts, post]
     });
 
-    console.log("Posts by user", uid, ":", posts);
+    console.log("Fetched user posts of ", uid, ":", posts);
+
     return posts;
   } catch (error) {
     console.error("Error fetching posts by user:", error);
   }
 };
 
-export const updateProfileImage = async (user) => {
+export const updateProfileImage = async (user: User) => {
+  // We call the pickerImage function to get the image
   const result = await pickerImage();
 
-  if (!result) {
-    // Handle the case where pickerImage() returns void
-    return;
-  }
+  // If user cancels image picker or if there is no image
+  if (!result) return;
 
+  // If user picks an image, we upload it to Firebase Storage
   const { uri, extension } = result;
 
+  // We get the image bytes
   const image = await fetch(uri);
   const bytes = await image.blob();
 
-  const filesRef = ref(storage, `avatar-${user.uid}.${extension}`);
-  await uploadBytes(filesRef, bytes);
+  // We upload the image to Firebase Storage
+  const fileRef = ref(storage, `avatar-${user.uid}.${extension}`);
+  await uploadBytes(fileRef, bytes);
 
-  const imageURL = await getDownloadURL(filesRef);
-
-  await updateProfile(user, { photoURL: imageURL });
+  // We get the image URL
+  const imageURL = await getDownloadURL(fileRef);
+  // We update the user profile
+  await updateDoc(doc(firestore, "users", user.uid), { picture: imageURL });
 };
