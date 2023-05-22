@@ -1,48 +1,46 @@
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider } from "native-base";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Footer from "./src/components/Footer";
 import Profile from "./src/screens/Profile";
 import Contact from "./src/screens/Contact";
 import Swipe from "./src/screens/Swipe";
 import Auth from "./src/screens/Auth";
-import React, { useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./src/lib/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const [route, setRoute] = React.useState(false);
+  AsyncStorage.setItem("lol", "test");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const checkAsyncStorage = async () => {
-      const token = await AsyncStorage.getItem('token');
-      const profile = await AsyncStorage.getItem('profile');
-  
-      if (token && profile) {
-        setRoute(true);
+    onAuthStateChanged(auth, (user) => {
+      if(user) {
+        const uid = user.uid;
+        setUser(uid);
       } else {
-        setRoute(false);
+        setUser(null);
       }
-    };
-  
-    checkAsyncStorage();
-  }, []);
+    })
+  })
 
-  console.log(route);
   return (
     <NativeBaseProvider>
-      <Box
-        flex={1}
-      >
-      <NavigationContainer >
+      <Box flex={1}>
+        <NavigationContainer>
           <Stack.Navigator>
+            {!user ?
             <Stack.Screen
               options={{ headerShown: false }}
               name="Auth"
               component={Auth}
-            />
+            /> :
+            <>
             <Stack.Screen
               options={{ headerShown: false }}
               name="Swipe"
@@ -58,11 +56,11 @@ const App = () => {
               name="Profile"
               component={Profile}
             />
+            </>}
           </Stack.Navigator>
-          {route &&
-          <Footer/>}
-          <StatusBar style="auto" />
+          {user ? <Footer /> : ""}
         </NavigationContainer>
+        <StatusBar style="auto" />
       </Box>
     </NativeBaseProvider>
   );

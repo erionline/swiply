@@ -11,8 +11,7 @@ import {
   Center,
 } from "native-base";
 import React, { useEffect } from "react";
-import { logIn, signUp } from "../services/firebase.service";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logIn, signUp } from "../services/auth.service";
 import { useNavigation } from "@react-navigation/native";
 
 const Auth = () => {
@@ -20,17 +19,10 @@ const Auth = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");
-  const [surName, setSurName] = React.useState("");
   const [bio, setBio] = React.useState("");
   const [passwordConfirm, setPasswordConfirm] = React.useState("");
   const [error, setError] = React.useState("");
   const navigation = useNavigation();
-
-  useEffect(() => {
-    if (AsyncStorage.getItem("token") && AsyncStorage.getItem("profile")) {
-      navigation.navigate("Profile" as never);
-    }
-  }, []);
 
   const onPressHandler = (textEntered, keyInput) => {
     switch (keyInput) {
@@ -42,9 +34,6 @@ const Auth = () => {
         break;
       case "name":
         setName(textEntered);
-        break;
-      case "surName":
-        setSurName(textEntered);
         break;
       case "bio":
         setBio(textEntered);
@@ -62,11 +51,11 @@ const Auth = () => {
       case false:
         if (password !== passwordConfirm) {
           setError("Les 2 mots de passe ne sont pas identiques");
-        } else if (name == "" || surName == "" || bio == "") {
+        } else if (name == "" || bio == "") {
           setError("Il faut remplir toutes les cases");
         } else {
           try {
-            const sign = await signUp(email, name, surName, bio, password);
+            const sign = await signUp(email, name, bio, password);
             if(sign) {
               setLogin(true);
             }
@@ -78,7 +67,9 @@ const Auth = () => {
       case true:
         try {
           const log1 = await logIn(email, password);
-          return log1;
+          if(log1) {
+            navigation.navigate("Swipe" as never);
+          }
         } catch (error) {
           onErrorHandler(error.code);
         }
@@ -86,7 +77,9 @@ const Auth = () => {
       default:
         try {
           const log2 = await logIn(email, password);
-          return log2;
+          if(log2) {
+            navigation.navigate("Swipe" as never);
+          }
         } catch (error) {
           onErrorHandler(error.code);
         }
@@ -95,7 +88,6 @@ const Auth = () => {
   };
 
   const onErrorHandler = (errorCode) => {
-    console.log(errorCode);
     let errorMessage = "";
     switch (errorCode) {
       case "auth/wrong-password":
@@ -145,7 +137,7 @@ const Auth = () => {
 
         <VStack space={3} mt="5">
           <FormControl>
-            <FormControl.Label>Email ID</FormControl.Label>
+            <FormControl.Label>Email</FormControl.Label>
             <Input
               onChangeText={(textEntered) =>
                 onPressHandler(textEntered, "email")
@@ -157,18 +149,10 @@ const Auth = () => {
           ) : (
             <>
               <FormControl>
-                <FormControl.Label>Name</FormControl.Label>
+                <FormControl.Label>Nom</FormControl.Label>
                 <Input
                   onChangeText={(textEntered) =>
                     onPressHandler(textEntered, "name")
-                  }
-                />
-              </FormControl>
-              <FormControl>
-                <FormControl.Label>SurName</FormControl.Label>
-                <Input
-                  onChangeText={(textEntered) =>
-                    onPressHandler(textEntered, "surName")
                   }
                 />
               </FormControl>
@@ -183,7 +167,7 @@ const Auth = () => {
             </>
           )}
           <FormControl>
-            <FormControl.Label>Password</FormControl.Label>
+            <FormControl.Label>Mot de passe</FormControl.Label>
             <Input
               type="password"
               onChangeText={(textEntered) =>
@@ -195,7 +179,7 @@ const Auth = () => {
             ""
           ) : (
             <FormControl>
-              <FormControl.Label>Confirm Password</FormControl.Label>
+              <FormControl.Label>Confirmer le mot de passe</FormControl.Label>
               <Input
                 type="password"
                 onChangeText={(textEntered) =>
