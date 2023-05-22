@@ -1,17 +1,20 @@
 import { updatePassword, updateProfile } from "firebase/auth";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, firestore, pickerImage, storage } from "./firebase.service";
+
+import { atom, useAtom } from 'jotai'
+import { UserProfile } from "../utils/types";
+
+export const userAtom = atom<UserProfile>({
+  id: "",
+  name: "",
+  picture: "",
+  bio: "",
+  email: "",
+  password: "",
+  posts: [],
+})
 
 export const getProfile = async (uid) => {
   return new Promise(async (resolve, reject) => {

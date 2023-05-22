@@ -24,19 +24,8 @@ import {
 } from "../services/profile.service";
 import React from "react";
 import { auth } from "../services/firebase.service";
-import { UserProfile } from "../utils/types";
 
-const Profile = () => {
-  const [profile, setProfile] = React.useState<UserProfile>({
-    id: "",
-    name: "",
-    picture: "",
-    bio: "",
-    email: "",
-    password: "",
-    posts: [],
-  });
-  
+const Profile = () => {  
   const [editMode, setEditMode] = React.useState(false);
   const [password, setPassword] = React.useState("");
   const [name, setName] = React.useState("");

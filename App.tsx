@@ -15,7 +15,6 @@ import { auth } from "./src/services/firebase.service";
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  AsyncStorage.setItem("lol", "test");
   const [user, setUser] = useState(null);
 
   useEffect(() => {
