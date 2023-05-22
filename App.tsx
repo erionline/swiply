@@ -9,8 +9,8 @@ import Contact from "./src/screens/Contact";
 import Swipe from "./src/screens/Swipe";
 import Auth from "./src/screens/Auth";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./src/lib/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { auth } from "./src/services/firebase.service";
 
 const Stack = createNativeStackNavigator();
 
