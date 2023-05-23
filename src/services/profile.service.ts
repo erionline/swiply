@@ -38,12 +38,9 @@ export const getRandomProfile = async () => {
         };
         usersData.push(userData);
       });
-      console.log("actualUserData.contact " + actualUserData.contact);
-      console.log("usersData " + JSON.stringify(usersData));
 
       if (actualUserData.contact && actualUserData.contact.length !== 0) {
         for (const followedUser of actualUserData.contact) {
-          console.log("followedUser " + JSON.stringify(followedUser));
           usersData.forEach((element, index) => {
             if ((element.uid as String) == (followedUser as String) || auth.currentUser.uid === element.uid)
               delete usersData[index];
@@ -51,8 +48,6 @@ export const getRandomProfile = async () => {
         }
         usersData = usersData.filter((element) => element !== null);
       }
-
-      console.log("usersDataAFTER " + JSON.stringify(usersData));
 
       if (usersData.length > 0) {
         const randomIndex = Math.floor(Math.random() * usersData.length);
@@ -106,7 +101,6 @@ export const createPost = async ({ title, content }) => {
       };
 
       await setDoc(postRef, postData);
-      console.log("User post has been created.");
     }
   } catch (error) {
     console.error("Error while creating user post: ", error);
@@ -127,8 +121,6 @@ export const fetchPostsByUser = async (uid: string) => {
       post.id = doc.id;
       posts = [...posts, post];
     });
-
-    console.log("Fetched user posts of ", uid, ":", JSON.stringify(posts));
 
     return posts;
   } catch (error) {
@@ -158,6 +150,28 @@ export const updateProfileImage = async (user: User) => {
   const imageURL = await getDownloadURL(fileRef);
   // We update the user profile
   await updateDoc(doc(firestore, "users", user.uid), { picture: imageURL });
+};
+
+export const fetchContactUsers = async (uid: string) => {
+  try {
+    const userFollowerData = await getUserProfile(uid);
+    const users = [];
+
+    for (const userFolloweruid of userFollowerData.contact) {
+      const userProfile = await getUserProfile(userFolloweruid);
+      const playerInfo = {
+        id: userFolloweruid,
+        name: userProfile.name,
+        picture: userProfile.picture,
+        bio: userProfile.bio
+      };
+      users.push(playerInfo);
+    }
+    return users;
+  } catch (error) {
+    console.error("Error fetching users by contact:", error);
+    throw error;
+  }
 };
 
 export const updateProfileContact = async (uidFollowed: string, user: User) => {
