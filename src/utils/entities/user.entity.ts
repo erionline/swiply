@@ -14,6 +14,7 @@ export interface UserProfile {
     id: string;
     name: string;
     picture: string;
+    contact?: string[];
     bio: string;
     email: string;
     password?: string;

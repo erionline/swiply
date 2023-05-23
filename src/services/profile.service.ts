@@ -1,5 +1,14 @@
-import { User, updatePassword, updateProfile } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
+import { User, updatePassword } from "firebase/auth";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, firestore, pickerImage, storage } from "./firebase.service";
 import { UserPost, UserProfile, userAtom } from "../utils/entities/user.entity";
@@ -7,7 +16,7 @@ import { useAtom } from "jotai";
 
 export const getUserProfile = async (uid: string) => {
   const queryUser = doc(firestore, "users", uid);
-  const userDoc = await getDoc(queryUser)
+  const userDoc = await getDoc(queryUser);
   return userDoc.exists() ? userDoc.data() : null;
 };
 
@@ -16,22 +25,34 @@ export const getRandomProfile = async () => {
     try {
       const usersRef = collection(firestore, "users");
       const querySnapshot = await getDocs(usersRef);
-      const usersData = [];
+      const actualUserData = await getUserProfile(auth.currentUser.uid);
+      let usersData = [];
 
-      querySnapshot.forEach(async (doc) => {
+      querySnapshot.forEach((doc) => {
         const userFirstPartData = doc.data();
-        const queryUser = await getDocs(query(usersRef, where("uri", "==", doc.id)));
-        if (!queryUser.empty) {
-          const userDoc = querySnapshot.docs[0];
-          const userSecondPartData = userDoc.data();
-          usersData.push({
-            id: doc.id,
-            photoURL: userSecondPartData.photoURL,
-            name: userFirstPartData.name,
-            bio: userFirstPartData.bio,
+        const userData = {
+          uid: doc.id,
+          picture: userFirstPartData.picture,
+          name: userFirstPartData.name,
+          bio: userFirstPartData.bio,
+        };
+        usersData.push(userData);
+      });
+      console.log("actualUserData.contact " + actualUserData.contact);
+      console.log("usersData " + JSON.stringify(usersData));
+
+      if (actualUserData.contact && actualUserData.contact.length !== 0) {
+        for (const followedUser of actualUserData.contact) {
+          console.log("followedUser " + JSON.stringify(followedUser));
+          usersData.forEach((element, index) => {
+            if ((element.uid as String) == (followedUser as String) || auth.currentUser.uid === element.uid)
+              delete usersData[index];
           });
         }
-      });
+        usersData = usersData.filter((element) => element !== null);
+      }
+
+      console.log("usersDataAFTER " + JSON.stringify(usersData));
 
       if (usersData.length > 0) {
         const randomIndex = Math.floor(Math.random() * usersData.length);
@@ -62,14 +83,13 @@ export const updateProfileDetails = async (profile: UserProfile) => {
       setProfile({ ...profile, password: "" });
       updatePassword(user, profile.password);
     }
-
   } catch (error) {
-    console.error("Erreur lors de la connexion :", error);
+    console.error("Error while getting user details: ", error);
     throw error;
   }
 };
 
-export const createPost = async ({title, content}) => {
+export const createPost = async ({ title, content }) => {
   try {
     if (title && content) {
       const postsCollection = collection(firestore, "posts");
@@ -97,16 +117,18 @@ export const fetchPostsByUser = async (uid: string) => {
   const postsCollection = collection(firestore, "posts");
 
   try {
-    const querySnapshot = await getDocs(query(postsCollection, where("authorId", "==", uid)));
+    const querySnapshot = await getDocs(
+      query(postsCollection, where("authorId", "==", uid))
+    );
     let posts = [];
 
     querySnapshot.forEach((doc) => {
       const post = doc.data();
       post.id = doc.id;
-      posts = [...posts, post]
+      posts = [...posts, post];
     });
 
-    console.log("Fetched user posts of ", uid, ":", posts);
+    console.log("Fetched user posts of ", uid, ":", JSON.stringify(posts));
 
     return posts;
   } catch (error) {
@@ -136,4 +158,20 @@ export const updateProfileImage = async (user: User) => {
   const imageURL = await getDownloadURL(fileRef);
   // We update the user profile
   await updateDoc(doc(firestore, "users", user.uid), { picture: imageURL });
+};
+
+export const updateProfileContact = async (uidFollowed: string, user: User) => {
+  try {
+    const userFollowerData = await getUserProfile(user.uid);
+    if (userFollowerData && !userFollowerData.contact) {
+      userFollowerData.contact = [];
+    }
+    const userRef = doc(firestore, "users", user.uid);
+    updateDoc(userRef, {
+      contact: [...userFollowerData.contact, uidFollowed],
+    });
+  } catch (error) {
+    console.error("Error updating the user: ", error);
+    throw error;
+  }
 };
