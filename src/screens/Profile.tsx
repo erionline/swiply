@@ -3,11 +3,10 @@ import {
   Avatar,
   Box,
   Button,
-  Center,
   FormControl,
+  HStack,
   Icon,
   Input,
-  NativeBaseProvider,
   ScrollView,
   Text,
   TextArea,
@@ -48,154 +47,254 @@ const Profile = () => {
       const posts = await fetchPostsByUser(auth.currentUser.uid);
       setPosts(posts as UserPost[]);
     };
-    console.log(posts);
 
     fetchUserPost();
     fetchUserProfile();
   }, [editMode, currentPost]);
 
   return (
-    <NativeBaseProvider>
-      <ScrollView flex={1} paddingY={20}>
-        <Center>
-          <VStack
-            space={2}
-            alignItems={{
-              base: "center",
-              md: "flex-start",
-            }}
-          >
-            {user && user.picture && (
-              <Avatar
-                bg="green.500"
-                alignSelf="center"
-                size="xs"
-                source={{
-                  uri: user.picture,
-                }}
-              >
-                AJ
-              </Avatar>
-            )}
-            {user ? (
-              editMode ? (
-                <>
-                  <FormControl>
-                    <FormControl.Label>Nom</FormControl.Label>
-                    <Input
-                      width={200}
-                      placeholder={user.name}
-                      onChangeText={(textEntered) =>
-                        setUser({ ...user, name: textEntered })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormControl.Label>Bio</FormControl.Label>
-                    <Input
-                      width={200}
-                      placeholder={user.bio}
-                      onChangeText={(textEntered) =>
-                        setUser({ ...user, bio: textEntered })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormControl.Label>Mot de passe</FormControl.Label>
-                    <Input
-                      type="password"
-                      width={200}
-                      placeholder="********"
-                      onChangeText={(textEntered) =>
-                        setUser({ ...user, password: textEntered })
-                      }
-                    />
-                  </FormControl>
-                  <Button
-                    onPress={() => {
-                      updateProfileImage(auth.currentUser);
-                    }}
+      <ScrollView flex={1} paddingY={60} paddingX={5}>
+        <Box
+          position={'absolute'}
+          top={-60}
+          left={-20}
+          right={-20}
+          height={170}
+          bg={'coolGray.800'}
+          zIndex={-1}
+          borderBottomRightRadius={60}
+        />
+
+        <Box>
+          {user && (
+            <Avatar
+              bg="coolGray.100"
+              size="xl"
+              source={user.picture && { uri: user.picture }}
+              borderRadius={"full"}
+              borderWidth={2}
+              borderColor={"coolGray.100"}
+            />
+          )}
+          {user ? (
+            editMode ? (
+              <>
+                <FormControl>
+                  <FormControl.Label>Name</FormControl.Label>
+                  <Input
                     width={200}
-                    leftIcon={
-                      <Icon
-                        mb="1"
-                        as={<MaterialCommunityIcons name="camera" />}
-                        color="white"
-                        size="sm"
-                      />
+                    placeholder={user.name}
+                    onChangeText={(textEntered) =>
+                      setUser({ ...user, name: textEntered })
                     }
-                  >
-                    Changer votre image
-                  </Button>
-                  <Button
-                    onPress={() => {
-                      updateProfileDetails(user);
-                      setEditMode(false);
-                    }}
-                  >
-                    Confirmer les changements
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Text>{user.name}</Text>
-                  <Text>{user.bio}</Text>
-                </>
-              )
-            ) : (
-              ""
-            )}
-            <Button width={200} onPress={() => setEditMode(!editMode)}>
-              {editMode ? "Fermer l'editeur" : "Editer votre profile"}
-            </Button>
-            <Button width={200} onPress={() => onLogOutHandler()}>
-              Deconnexion
-            </Button>
-          </VStack>
-          <VStack>
-            <FormControl>
-              <FormControl.Label>Titre</FormControl.Label>
-              <Input
-                placeholder="coucou"
-                w="50%"
-                onChangeText={(textEntered) =>
-                  setCurrentPost({ ...currentPost, title: textEntered })
-                }
-              />
-            </FormControl>
-            <FormControl marginY="5">
-              <FormControl.Label>Contenu</FormControl.Label>
-              <Box alignItems="center" w="100%">
-                <TextArea
-                  h={20}
-                  placeholder="Votre poste"
-                  w="75%"
-                  maxW="300"
-                  autoCompleteType={undefined}
-                  onChangeText={(textEntered) =>
-                    setCurrentPost({ ...currentPost, content: textEntered })
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormControl.Label>Bio</FormControl.Label>
+                  <Input
+                    width={200}
+                    placeholder={user.bio}
+                    onChangeText={(textEntered) =>
+                      setUser({ ...user, bio: textEntered })
+                    }
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormControl.Label>Password</FormControl.Label>
+                  <Input
+                    type="password"
+                    width={200}
+                    placeholder="********"
+                    onChangeText={(textEntered) =>
+                      setUser({ ...user, password: textEntered })
+                    }
+                  />
+                </FormControl>
+                <Button
+                  onPress={() => {
+                    updateProfileImage(auth.currentUser);
+                  }}
+                  width={200}
+                  leftIcon={
+                    <Icon
+                      mb="1"
+                      as={<MaterialCommunityIcons name="camera" />}
+                      color="white"
+                      size="sm"
+                    />
                   }
-                />
-              </Box>
-            </FormControl>
-            <Button onPress={() => createPost(currentPost)}>
-              Terminer votre poste :D
-            </Button>
-          </VStack>
-          <VStack marginY="5">
-            {posts &&
-              posts.map((post, i) => (
-                <Box key={i} borderWidth="1" marginY="5">
-                  <Text fontWeight="bold">{post.title}</Text>
-                  <Text>{post.content}</Text>
-                    <Text color="gray.500">{post.date.toString()}</Text>
+                >
+                  Change your profile picture
+                </Button>
+                <Button
+                  onPress={() => {
+                    updateProfileDetails(user);
+                    setEditMode(false);
+                  }}
+                >
+                  Confirm changes
+                </Button>
+              </>
+            ) : (
+              <Box paddingTop={5}>
+                <Text fontSize={'4xl'} fontWeight={"semibold"}>{user.name}</Text>
+                <Text fontSize={'xl'} marginTop={-1}>{user.bio}</Text>
+                <Box flex={0} flexDirection={"row"}>
+                  <Icon as={<MaterialCommunityIcons name="calendar" />} size="sm" marginRight={1} />
+                  <Text>Joined at {new Date().toDateString()}</Text>
                 </Box>
-              ))}
-          </VStack>
-        </Center>
+              </Box>
+            )
+          ) : (
+            ""
+          )}
+          <HStack space={2} alignItems={'flex-start'} marginTop={5}>
+            <Button backgroundColor={'coolGray.500'} width={editMode ? 'full' : '50%'} onPress={() => setEditMode(!editMode)}>
+              {editMode ? "Close editor" : "Edit your profile"}
+            </Button>
+            {!editMode && <Button backgroundColor={'coolGray.500'} width={'50%'} onPress={() => onLogOutHandler()}>
+              Log out
+            </Button>}
+
+          </HStack>
+        </Box>
+        
+
+ 
       </ScrollView>
-    </NativeBaseProvider>
   );
 };
 
 export default Profile;
+
+
+{/* <VStack
+space={2}
+alignItems={{
+  base: "center",
+  md: "flex-start",
+}}
+>
+{user && user.picture && (
+  <Avatar
+    bg="green.500"
+    alignSelf="center"
+    size="xs"
+    source={user.picture && { uri: user.picture }}
+  />
+)}
+{user ? (
+  editMode ? (
+    <>
+      <FormControl>
+        <FormControl.Label>Nom</FormControl.Label>
+        <Input
+          width={200}
+          placeholder={user.name}
+          onChangeText={(textEntered) =>
+            setUser({ ...user, name: textEntered })
+          }
+        />
+      </FormControl>
+      <FormControl>
+        <FormControl.Label>Bio</FormControl.Label>
+        <Input
+          width={200}
+          placeholder={user.bio}
+          onChangeText={(textEntered) =>
+            setUser({ ...user, bio: textEntered })
+          }
+        />
+      </FormControl>
+      <FormControl>
+        <FormControl.Label>Mot de passe</FormControl.Label>
+        <Input
+          type="password"
+          width={200}
+          placeholder="********"
+          onChangeText={(textEntered) =>
+            setUser({ ...user, password: textEntered })
+          }
+        />
+      </FormControl>
+      <Button
+        onPress={() => {
+          updateProfileImage(auth.currentUser);
+        }}
+        width={200}
+        leftIcon={
+          <Icon
+            mb="1"
+            as={<MaterialCommunityIcons name="camera" />}
+            color="white"
+            size="sm"
+          />
+        }
+      >
+        Changer votre image
+      </Button>
+      <Button
+        onPress={() => {
+          updateProfileDetails(user);
+          setEditMode(false);
+        }}
+      >
+        Confirmer les changements
+      </Button>
+    </>
+  ) : (
+    <>
+      <Text>{user.name}</Text>
+      <Text>{user.bio}</Text>
+    </>
+  )
+) : (
+  ""
+)}
+<Button width={200} onPress={() => setEditMode(!editMode)}>
+  {editMode ? "Fermer l'editeur" : "Editer votre profile"}
+</Button>
+<Button width={200} onPress={() => onLogOutHandler()}>
+  Deconnexion
+</Button>
+</VStack>
+<VStack>
+<FormControl>
+  <FormControl.Label>Titre</FormControl.Label>
+  <Input
+    placeholder="coucou"
+    w="50%"
+    onChangeText={(textEntered) =>
+      setCurrentPost({ ...currentPost, title: textEntered })
+    }
+  />
+</FormControl>
+<FormControl marginY="5">
+  <FormControl.Label>Contenu</FormControl.Label>
+  <Box alignItems="center" w="100%">
+    <TextArea
+      h={20}
+      placeholder="Votre poste"
+      w="75%"
+      maxW="300"
+      autoCompleteType={undefined}
+      onChangeText={(textEntered) =>
+        setCurrentPost({ ...currentPost, content: textEntered })
+      }
+    />
+  </Box>
+</FormControl>
+<Button onPress={() => createPost(currentPost)}>
+  Terminer votre poste :D
+</Button>
+</VStack>
+<VStack marginY="5">
+{posts &&
+  posts.map((post, i) => (
+    <Box key={i} borderWidth="1" marginY="5">
+      <Text fontWeight="bold">{post.title}</Text>
+      <Text>{post.content}</Text>
+        <Text color="gray.500">{post.date.toString()}</Text>
+    </Box>
+  ))}
+</VStack> */}

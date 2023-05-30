@@ -92,6 +92,7 @@ export const createPost = async ({ title, content }) => {
       const user = auth.currentUser;
 
       const postData: UserPost = {
+        authorAvatar: "",
         authorId: user?.uid,
         title: title,
         content: content,
@@ -152,27 +153,28 @@ export const updateProfileImage = async (user: User) => {
   await updateDoc(doc(firestore, "users", user.uid), { picture: imageURL });
 };
 
-export const fetchContactUsers = async (uid: string) => {
-  try {
-    const userFollowerData = await getUserProfile(uid);
-    const users = [];
+// export const fetchContactUsers = async (uid: string) => {
+//   try {
+//     const userFollowerData = await getUserProfile(uid);
+//     const users = [];
 
-    for (const userFolloweruid of userFollowerData.contact) {
-      const userProfile = await getUserProfile(userFolloweruid);
-      const playerInfo = {
-        id: userFolloweruid,
-        name: userProfile.name,
-        picture: userProfile.picture,
-        bio: userProfile.bio
-      };
-      users.push(playerInfo);
-    }
-    return users;
-  } catch (error) {
-    console.error("Error fetching users by contact:", error);
-    throw error;
-  }
-};
+//     for (const userFolloweruid of userFollowerData.contact) {
+//       const userProfile = await getUserProfile(userFolloweruid);
+//       const playerInfo = {
+//         id: userFolloweruid,
+//         name: userProfile.name,
+//         picture: userProfile.picture,
+//         bio: userProfile.bio
+//       };
+
+//       users.push(playerInfo);
+//     }
+//     return users;
+//   } catch (error) {
+//     console.error("Error fetching users by contact:", error);
+//     throw error;
+//   }
+// };
 
 export const updateProfileContact = async (uidFollowed: string, user: User) => {
   try {

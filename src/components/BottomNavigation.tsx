@@ -3,7 +3,7 @@ import { Text, Icon, HStack, Center, Pressable } from "native-base";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-const Footer = () => {
+const BottomNavigation = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = React.useState(1);
 
@@ -11,7 +11,7 @@ const Footer = () => {
     setSelected(page);
     switch (page) {
       case 1: {
-        navigation.navigate("Swipe" as never);
+        navigation.navigate("Feed" as never);
         break;
       }
       case 2: {
@@ -23,7 +23,7 @@ const Footer = () => {
         break;
       }
       default: {
-        navigation.navigate("Swipe" as never);
+        navigation.navigate("Feed" as never);
         break;
       }
     }
@@ -31,7 +31,7 @@ const Footer = () => {
 
   return (
     <HStack
-      bg="indigo.600"
+      bg="coolGray.900"
       safeAreaBottom
       shadow={6}
       position="absolute"
@@ -57,7 +57,7 @@ const Footer = () => {
             size="sm"
           />
           <Text color="white" fontSize="12">
-            Swipe
+            Feed
           </Text>
         </Center>
       </Pressable>
@@ -109,4 +109,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default BottomNavigation;

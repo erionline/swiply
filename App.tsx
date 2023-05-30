@@ -3,10 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import { Box, NativeBaseProvider } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Footer from "./src/components/Footer";
+import BottomNavigation from "./src/components/BottomNavigation";
 import Profile from "./src/screens/Profile";
 import Contact from "./src/screens/Contact";
-import Swipe from "./src/screens/Swipe";
+import Feed from "./src/screens/Feed";
 import Auth from "./src/screens/Auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./src/services/firebase.service";
@@ -36,12 +36,11 @@ const App = () => {
               options={{ headerShown: false }}
               name="Auth"
               component={Auth}
-            /> :
-            <>
+            /> : <>
             <Stack.Screen
               options={{ headerShown: false }}
-              name="Swipe"
-              component={Swipe}
+              name="Feed"
+              component={Feed}
             />
             <Stack.Screen
               options={{ headerShown: false }}
@@ -55,7 +54,7 @@ const App = () => {
             />
             </>}
           </Stack.Navigator>
-          {user ? <Footer /> : ""}
+          {user ? <BottomNavigation /> : ""}
         </NavigationContainer>
         <StatusBar style="auto" />
     </NativeBaseProvider>

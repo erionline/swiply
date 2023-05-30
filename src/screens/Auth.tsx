@@ -68,7 +68,7 @@ const Auth = () => {
         try {
           const log1 = await logIn(email, password);
           if (log1) {
-            navigation.navigate("Swipe" as never);
+            navigation.navigate("Feed" as never);
           }
         } catch (error) {
           onErrorHandler(error.code);
@@ -78,7 +78,7 @@ const Auth = () => {
         try {
           const log2 = await logIn(email, password);
           if (log2) {
-            navigation.navigate("Swipe" as never);
+            navigation.navigate("Feed" as never);
           }
         } catch (error) {
           onErrorHandler(error.code);

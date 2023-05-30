@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Avatar,
   Box,
@@ -9,14 +10,14 @@ import {
   Text,
   VStack,
 } from "native-base";
-import React, { useState } from "react";
 import {
-  fetchContactUsers,
+  // fetchContactUsers,
   fetchPostsByUser,
   updateProfileContact,
 } from "../services/profile.service";
 import { auth } from "../services/firebase.service";
 import { UserPost, UserProfile } from "../utils/entities/user.entity";
+import { useEffect, useState } from "react";
 
 const Contact = () => {
   const [contacts, setContacts] = useState<UserProfile[]>([]);
@@ -36,14 +37,14 @@ const Contact = () => {
     console.log(contacts);
   };
 
-  React.useEffect(() => {
-    const fetchContactUser = async () => {
-      const contacts = await fetchContactUsers(auth.currentUser.uid);
-      setContacts(contacts as UserProfile[]);
-    };
+  // useEffect(() => {
+  //   const fetchContactUser = async () => {
+  //     const contacts = await fetchContactUsers(auth.currentUser.uid);
+  //     setContacts(contacts as UserProfile[]);
+  //   };
 
-    fetchContactUser();
-  }, []);
+  //   fetchContactUser();
+  // }, []);
 
   return (
     <NativeBaseProvider>
@@ -51,7 +52,7 @@ const Contact = () => {
         <Heading>Vos Contacts</Heading>
         {!contact ? (
           <>
-            {contacts.map((contact) => (
+            {/* {contacts.map((contact) => (
               <HStack alignItems="center" key={contact.id}>
                 <Button
                   w="50%"
@@ -69,7 +70,7 @@ const Contact = () => {
                   </VStack>
                 </Button>
               </HStack>
-            ))}
+            ))} */}
           </>
         ) : (
           <>
@@ -77,9 +78,7 @@ const Contact = () => {
               bg="green.500"
               alignSelf="center"
               size="xs"
-              source={{
-                uri: contact.picture,
-              }}
+              source={contact.picture && { uri: contact.picture }}
             >
               AJ
             </Avatar>
