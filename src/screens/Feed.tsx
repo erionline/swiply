@@ -112,7 +112,7 @@ const Feed = () => {
                 bottom={-15}
                 right={-10}
                 bg={'green.500'}
-                width={"1O"}
+                width={"12%"}
                 height={"8"}
                 onPress={() => likeHandler(post.authorId)}
                 leftIcon={
@@ -129,9 +129,9 @@ const Feed = () => {
                 bottom={-15}
                 left={-10}
                 bg={'rose.500'}
-                width={"1O"}
+                width={"12%"}
                 height={"8"}
-                onPress={() => likeHandler(post.authorId)}
+                onPress={() => setPosts(posts.filter((p) => p !== post))}
                 leftIcon={
                   <Icon
                     mb="1"
@@ -155,7 +155,7 @@ const Feed = () => {
                       {post.authorName}
                     </Text>
                     <Text marginTop={-1} color="coolGray.500">
-                      @{post.authorName.toLowerCase()}
+                      @{post.authorName.toLowerCase().replace(" ", "").trim()}
                     </Text>
                   </VStack>
                 </HStack>
