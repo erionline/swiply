@@ -34,9 +34,9 @@ const Feed = () => {
     setProfiles(profileData);
   };
 
-  const likeHandler = async (followedUser: User['uid']) => {
-    await updateProfileContact(followedUser, auth.currentUser);
-    await fetchRandomProfile();
+  const likeHandler = async (post: UserPost) => {
+    await updateProfileContact(post.authorId, auth.currentUser);
+    setPosts(posts.filter((p) => p !== post))
   };
 
   React.useEffect(() => {
@@ -126,11 +126,11 @@ const Feed = () => {
               <Button
                 position={'absolute'}
                 bottom={-15}
-                right={-10}
+                right={-6}
                 bg={'green.500'}
                 width={"12%"}
                 height={"8"}
-                onPress={() => likeHandler(post.authorId)}
+                onPress={() => likeHandler(post)}
                 leftIcon={
                   <Icon
                     mb="1"
@@ -143,7 +143,7 @@ const Feed = () => {
               <Button
                 position={'absolute'}
                 bottom={-15}
-                left={-10}
+                left={-6}
                 bg={'rose.500'}
                 width={"12%"}
                 height={"8"}
