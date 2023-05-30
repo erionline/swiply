@@ -11,6 +11,7 @@ import {
   VStack,
 } from "native-base";
 import {
+  fetchContactUsers,
   // fetchContactUsers,
   fetchPostsByUser,
   updateProfileContact,
@@ -37,14 +38,14 @@ const Contact = () => {
     console.log(contacts);
   };
 
-  // useEffect(() => {
-  //   const fetchContactUser = async () => {
-  //     const contacts = await fetchContactUsers(auth.currentUser.uid);
-  //     setContacts(contacts as UserProfile[]);
-  //   };
+   useEffect(() => {
+     const fetchContactUser = async () => {
+       const contacts = await fetchContactUsers(auth.currentUser.uid);
+       setContacts(contacts as UserProfile[]);
+     };
 
-  //   fetchContactUser();
-  // }, []);
+     fetchContactUser();
+   }, []);
 
   return (
     <NativeBaseProvider>
@@ -52,7 +53,7 @@ const Contact = () => {
         <Heading>Vos Contacts</Heading>
         {!contact ? (
           <>
-            {/* {contacts.map((contact) => (
+            {contacts.map((contact) => (
               <HStack alignItems="center" key={contact.id}>
                 <Button
                   w="50%"
@@ -70,7 +71,7 @@ const Contact = () => {
                   </VStack>
                 </Button>
               </HStack>
-            ))} */}
+            ))}
           </>
         ) : (
           <>
