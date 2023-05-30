@@ -176,15 +176,18 @@ export const updateProfileImage = async (user: User) => {
    }
  };
 
-export const updateProfileContact = async (uidFollowed: string, user: User) => {
+ export const updateProfileContact = async (uidFollowed: string, user: User) => {
   try {
     const userFollowerData = await getUserProfile(user.uid);
     if (userFollowerData && !userFollowerData.contact) {
       userFollowerData.contact = [];
     }
+
+    const updatedContact = Array.from(new Set([...userFollowerData.contact, uidFollowed]));
+
     const userRef = doc(firestore, "users", user.uid);
     updateDoc(userRef, {
-      contact: [...userFollowerData.contact, uidFollowed],
+      contact: updatedContact,
     });
   } catch (error) {
     console.error("Error updating the user: ", error);
