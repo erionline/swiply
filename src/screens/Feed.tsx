@@ -66,15 +66,18 @@ const Feed = () => {
   return (
     <ScrollView flex={1} bg="white" paddingX={5} paddingY={60}>
       <Header name={user.name} picture={user.picture} />
+
+        <HStack justifyContent="space-between" alignItems="center">
         <Input
           placeholder="What's on your mind?"
           fontSize={13}
-          width="100%"
+          width="82%"
           borderRadius={20}
           borderWidth={1}
           borderColor="coolGray.200"
           p={3}
           my={5}
+          mr={2}
           // Add pencil icon on the left of the input
           InputLeftElement={
             <MaterialCommunityIcons
@@ -94,6 +97,25 @@ const Feed = () => {
             setCurrentPost({ ...currentPost, content: "" });
           }}
         />
+
+        <Button
+          bg="info.500"
+          width="15%"
+          borderRadius={20}
+          onPress={() => {
+            createPost(currentPost);
+            setCurrentPost({ ...currentPost, content: "" });
+          }}
+          leftIcon={
+            <Icon
+              mb="1"
+              as={<MaterialCommunityIcons name="send" />}
+              color="white"
+              size="sm"
+            />
+          }
+        />
+        </HStack>
 
         {/* Display user posts */}
         <VStack justifyContent="space-between" alignItems="center" paddingBottom={"40"}>
@@ -173,58 +195,3 @@ const Feed = () => {
 };
 
 export default Feed;
-
-
-    {/* <NativeBaseProvider>
-      <ScrollView>
-        <Center>
-          <Text>test</Text>
-          {user ? (
-            <VStack
-              space={2}
-              alignItems={{
-                base: "center",
-                md: "flex-start",
-              }}
-            >
-              <Avatar
-                bg="green.500"
-                alignSelf="center"
-                size="xs"
-                source={user.picture && { uri: user.picture }}
-              />
-              <Text>{user.name}</Text>
-              <Text>{user.bio}</Text>
-              <Button
-                width={200}
-                onPress={() => likeHandler()}
-                leftIcon={
-                  <Icon
-                    mb="1"
-                    as={<MaterialCommunityIcons name="heart" />}
-                    color="white"
-                    size="sm"
-                  />
-                }
-              />
-              <Button
-                width={200}
-                onPress={() => fetchRandomProfile()}
-                leftIcon={
-                  <Icon
-                    mb="1"
-                    as={<MaterialCommunityIcons name="heart-broken" />}
-                    color="white"
-                    size="sm"
-                  />
-                }
-              />
-            </VStack>
-          ) : (
-            <Center>
-              <Heading>La Liste est finis pour aujourd'hui</Heading>
-            </Center>
-          )}
-        </Center>
-      </ScrollView>
-    </NativeBaseProvider> */}
