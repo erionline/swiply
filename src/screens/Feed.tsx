@@ -104,16 +104,38 @@ const Feed = () => {
               shadow={2}
               rounded="lg"
               p={5}
-              my={2}
+              my={4}
               width={'full'}
             >
               <Button
-                width={200}
+                position={'absolute'}
+                bottom={-15}
+                right={-10}
+                bg={'green.500'}
+                width={"1O"}
+                height={"8"}
                 onPress={() => likeHandler(post.authorId)}
                 leftIcon={
                   <Icon
                     mb="1"
                     as={<MaterialCommunityIcons name="heart" />}
+                    color="white"
+                    size="sm"
+                  />
+                }
+              />
+              <Button
+                position={'absolute'}
+                bottom={-15}
+                left={-10}
+                bg={'rose.500'}
+                width={"1O"}
+                height={"8"}
+                onPress={() => likeHandler(post.authorId)}
+                leftIcon={
+                  <Icon
+                    mb="1"
+                    as={<MaterialCommunityIcons name="heart-broken" />}
                     color="white"
                     size="sm"
                   />
