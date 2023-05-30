@@ -22,7 +22,7 @@ export interface UserProfile {
 }
 
 export interface UserPost {
-    authorAvatar: string;
+    authorAvatar?: string;
     authorId: string;
     authorName?: string;
     content: string;

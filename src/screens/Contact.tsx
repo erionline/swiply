@@ -35,8 +35,7 @@ const Contact = () => {
       email: contact.email,
       posts: posts,
     });
-    console.log(contacts);
-  };
+    };
 
    useEffect(() => {
      const fetchContactUser = async () => {

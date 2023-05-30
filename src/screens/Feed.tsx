@@ -51,7 +51,6 @@ const Feed = () => {
 
     fetchUserPost();
     fetchUserProfile();
-    console.log(posts);
   }, []);
 
   if (!user) {
