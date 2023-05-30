@@ -98,7 +98,6 @@ const Contact = () => {
               {posts &&
                 posts.map((post, i) => (
                   <Box key={i} borderWidth="1" marginY="5">
-                    <Text fontWeight="bold">{post.title}</Text>
                     <Text>{post.content}</Text>
                     <Text color="gray.500">{post.date.toString()}</Text>
                   </Box>

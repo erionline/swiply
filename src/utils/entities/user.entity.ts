@@ -25,7 +25,6 @@ export interface UserPost {
     authorAvatar: string;
     authorId: string;
     authorName?: string;
-    title: string;
     content: string;
     date: Date;
     likes: number;

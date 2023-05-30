@@ -84,9 +84,9 @@ export const updateProfileDetails = async (profile: UserProfile) => {
   }
 };
 
-export const createPost = async ({ title, content }) => {
+export const createPost = async ({ content }) => {
   try {
-    if (title && content) {
+    if (content) {
       const postsCollection = collection(firestore, "posts");
       const postRef = doc(postsCollection);
       const user = auth.currentUser;
@@ -94,7 +94,6 @@ export const createPost = async ({ title, content }) => {
       const postData: UserPost = {
         authorAvatar: "",
         authorId: user?.uid,
-        title: title,
         content: content,
         date: new Date(),
         likes: 0,

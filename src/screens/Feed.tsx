@@ -20,7 +20,6 @@ const Feed = () => {
   const [profiles, setProfiles] = useState<any>([]);
   const [posts, setPosts] = useState<UserPost[]>([]);
   const [currentPost, setCurrentPost] = useState<UserPost>({
-    title: "",
     content: "",
     authorId: auth.currentUser.uid,
     authorAvatar: user?.picture,
@@ -39,10 +38,6 @@ const Feed = () => {
     await updateProfileContact(followedUser, auth.currentUser);
     await fetchRandomProfile();
   };
-
-  // useEffect(() => {
-  //   fetchRandomProfile();
-  // }, []);
 
   React.useEffect(() => {
     const fetchUserProfile = async () => {
