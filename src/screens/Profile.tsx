@@ -24,6 +24,9 @@ import {
 import { auth } from "../services/firebase.service";
 import { useAtom } from "jotai";
 import { UserPost, UserProfile, userAtom } from "../utils/entities/user.entity";
+import Feed from "./Feed";
+import FeedPost from "../components/FeedPost";
+import { View } from "react-native";
 
 const Profile = () => {
   const [editMode, setEditMode] = React.useState(false);
@@ -67,6 +70,36 @@ const Profile = () => {
 
         <Box>
           {user && (
+            editMode ?
+              <View>
+                <Avatar
+                bg="coolGray.100"
+                size="xl"
+                source={user.picture && { uri: user.picture }}
+                borderRadius={"full"}
+                borderWidth={2}
+                opacity={0.5}
+                borderColor={"coolGray.100"}
+              />
+              <Button
+                position={'absolute'}
+                width={"98"}
+                height={"98"}
+                opacity={0.7}
+                bg={'coolGray.800'}
+                borderRadius={"full"}
+                onPress={() => updateProfileImage(auth.currentUser)}
+                leftIcon={
+                  <Icon
+                    mb="1"
+                    as={<MaterialCommunityIcons name="camera" />}
+                    color="white"
+                    size="sm"
+                  />
+                }
+              />
+              </View>
+             :
             <Avatar
               bg="coolGray.100"
               size="xl"
@@ -75,14 +108,16 @@ const Profile = () => {
               borderWidth={2}
               borderColor={"coolGray.100"}
             />
+          
           )}
           {user ? (
             editMode ? (
               <>
-                <FormControl>
+                <FormControl marginTop={10}>
+                  <Text fontSize={'2xl'} fontWeight={"semibold"}>Edit your profile</Text>
                   <FormControl.Label>Name</FormControl.Label>
                   <Input
-                    width={200}
+                    width={"full"}
                     placeholder={user.name}
                     onChangeText={(textEntered) =>
                       setUser({ ...user, name: textEntered })
@@ -92,7 +127,7 @@ const Profile = () => {
                 <FormControl>
                   <FormControl.Label>Bio</FormControl.Label>
                   <Input
-                    width={200}
+                    width={"full"}
                     placeholder={user.bio}
                     onChangeText={(textEntered) =>
                       setUser({ ...user, bio: textEntered })
@@ -103,7 +138,7 @@ const Profile = () => {
                   <FormControl.Label>Password</FormControl.Label>
                   <Input
                     type="password"
-                    width={200}
+                    width={"full"}
                     placeholder="********"
                     onChangeText={(textEntered) =>
                       setUser({ ...user, password: textEntered })
@@ -111,22 +146,7 @@ const Profile = () => {
                   />
                 </FormControl>
                 <Button
-                  onPress={() => {
-                    updateProfileImage(auth.currentUser);
-                  }}
-                  width={200}
-                  leftIcon={
-                    <Icon
-                      mb="1"
-                      as={<MaterialCommunityIcons name="camera" />}
-                      color="white"
-                      size="sm"
-                    />
-                  }
-                >
-                  Change your profile picture
-                </Button>
-                <Button
+                  marginTop={5}
                   onPress={() => {
                     updateProfileDetails(user);
                     setEditMode(false);
@@ -158,6 +178,21 @@ const Profile = () => {
 
           </HStack>
         </Box>
+
+        {/* List user posts here */}
+        <VStack marginY="5" paddingBottom={"40"}>
+          {posts &&
+            posts.map((post, i) => (
+              <FeedPost
+                key={i}
+                post={post}
+                index={i}
+                posts={posts}
+                setPosts={setPosts}
+                onLike={() => null}
+                withActions={false}
+              />))}
+        </VStack>
         
 
  

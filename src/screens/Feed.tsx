@@ -14,6 +14,7 @@ import Header from "../components/Header";
 import { UserPost, UserProfile } from "../utils/entities/user.entity";
 import { User } from "firebase/auth";
 import { getRandomUserPosts } from "../services/posts.service";
+import FeedPost from "../components/FeedPost";
 
 const Feed = () => {
   const [user, setUser] = useState<UserProfile>(null);
@@ -69,6 +70,7 @@ const Feed = () => {
           borderRadius={20}
           borderWidth={1}
           borderColor="coolGray.200"
+          value={currentPost.content}
           p={3}
           my={5}
           mr={2}
@@ -98,6 +100,7 @@ const Feed = () => {
           borderRadius={20}
           onPress={() => {
             createPost(currentPost);
+            setPosts([...posts, currentPost]);
             setCurrentPost({ ...currentPost, content: "" });
           }}
           leftIcon={
@@ -114,71 +117,15 @@ const Feed = () => {
         {/* Display user posts */}
         <VStack justifyContent="space-between" alignItems="center" paddingBottom={"40"}>
           {posts.map((post, index) => (
-            <Box
+            <FeedPost
               key={`post-${index}`}
-              bg="coolGray.50"
-              shadow={2}
-              rounded="lg"
-              p={5}
-              my={4}
-              width={'full'}
-            >
-              <Button
-                position={'absolute'}
-                bottom={-15}
-                right={-6}
-                bg={'green.500'}
-                width={"12%"}
-                height={"8"}
-                onPress={() => likeHandler(post)}
-                leftIcon={
-                  <Icon
-                    mb="1"
-                    as={<MaterialCommunityIcons name="heart" />}
-                    color="white"
-                    size="sm"
-                  />
-                }
-              />
-              <Button
-                position={'absolute'}
-                bottom={-15}
-                left={-6}
-                bg={'rose.500'}
-                width={"12%"}
-                height={"8"}
-                onPress={() => setPosts(posts.filter((p) => p !== post))}
-                leftIcon={
-                  <Icon
-                    mb="1"
-                    as={<MaterialCommunityIcons name="heart-broken" />}
-                    color="white"
-                    size="sm"
-                  />
-                }
-              />
-              <Text>{post.content}</Text>
-
-              <HStack justifyContent="space-between" alignItems="center" mt={5}>
-                <HStack alignItems="center">
-                  <Avatar
-                    bg="coolGray.500"
-                    size="sm"
-                    source={post.authorAvatar && { uri: post.authorAvatar }}
-                  />
-                  <VStack ml={2}>
-                    <Text fontWeight="bold" color="coolGray.900">
-                      {post.authorName}
-                    </Text>
-                    <Text marginTop={-1} color="coolGray.500">
-                      @{post.authorName.toLowerCase().replace(" ", "").trim()}
-                    </Text>
-                  </VStack>
-                </HStack>
-                <HStack alignItems="center">
-                </HStack>
-              </HStack>
-            </Box>
+              post={post}
+              index={index}
+              posts={posts}
+              setPosts={setPosts}
+              onLike={likeHandler}
+              withActions={true}
+            />
           ))}
         </VStack>
 

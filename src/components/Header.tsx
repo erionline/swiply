@@ -1,4 +1,4 @@
-import { Avatar, Box, HStack, Heading } from "native-base";
+import { Avatar, HStack, Heading } from "native-base";
 import React from "react";
 
 interface HeaderProps {

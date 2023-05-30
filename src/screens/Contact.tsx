@@ -7,6 +7,7 @@ import {
   HStack,
   Heading,
   NativeBaseProvider,
+  ScrollView,
   Text,
   VStack,
 } from "native-base";
@@ -19,6 +20,7 @@ import {
 import { auth } from "../services/firebase.service";
 import { UserPost, UserProfile } from "../utils/entities/user.entity";
 import { useEffect, useState } from "react";
+import Header from "../components/Header";
 
 const Contact = () => {
   const [contacts, setContacts] = useState<UserProfile[]>([]);
@@ -47,9 +49,12 @@ const Contact = () => {
    }, []);
 
   return (
-    <NativeBaseProvider>
-      <Center flex={1}>
-        <Heading>Vos Contacts</Heading>
+
+    <ScrollView flex={1} bg="white" paddingX={5} paddingY={60}>
+        <Heading>Posts de vos contacts</Heading>
+        <Text fontSize="sm" color="gray.500">
+          You can see the posts of the users you liked. They become your contacts.
+        </Text>
         {!contact ? (
           <>
             {contacts.map((contact) => (
@@ -65,8 +70,8 @@ const Contact = () => {
                   }}
                 >
                   <VStack alignItems="flex-start">
-                    <Text>{contact.name}</Text>
-                    <Text>{contact.bio}</Text>
+                    <Text color={"white"}>{contact.name}</Text>
+                    <Text color={"white"}>{contact.bio}</Text>
                   </VStack>
                 </Button>
               </HStack>
@@ -74,25 +79,8 @@ const Contact = () => {
           </>
         ) : (
           <>
-            <Avatar
-              bg="green.500"
-              alignSelf="center"
-              size="xs"
-              source={contact.picture && { uri: contact.picture }}
-            >
-              AJ
-            </Avatar>
             <Text>{contact.name}</Text>
             <Text>{contact.bio}</Text>
-            <Button
-              w="50%"
-              marginY="2"
-              onPress={() => {
-                setContact(null);
-              }}
-            >
-              Retour
-            </Button>
             <VStack marginY="5">
               {posts &&
                 posts.map((post, i) => (
@@ -104,8 +92,7 @@ const Contact = () => {
             </VStack>
           </>
         )}
-      </Center>
-    </NativeBaseProvider>
+      </ScrollView>
   );
 };
 
