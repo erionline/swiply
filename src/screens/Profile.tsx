@@ -187,7 +187,7 @@ const Profile = () => {
                 key={i}
                 post={post}
                 index={i}
-                posts={posts}
+                posts={posts.map((p) => { p.authorName = user.name; p.authorAvatar = user.picture; return (p as UserPost) })} // TODO: Fix this)))}
                 setPosts={setPosts}
                 onLike={() => null}
                 withActions={false}
