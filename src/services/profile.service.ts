@@ -153,38 +153,41 @@ export const updateProfileImage = async (user: User) => {
   await updateDoc(doc(firestore, "users", user.uid), { picture: imageURL });
 };
 
-// export const fetchContactUsers = async (uid: string) => {
-//   try {
-//     const userFollowerData = await getUserProfile(uid);
-//     const users = [];
+ export const fetchContactUsers = async (uid: string) => {
+   try {
+     const userFollowerData = await getUserProfile(uid);
+     const users = [];
 
-//     for (const userFolloweruid of userFollowerData.contact) {
-//       const userProfile = await getUserProfile(userFolloweruid);
-//       const playerInfo = {
-//         id: userFolloweruid,
-//         name: userProfile.name,
-//         picture: userProfile.picture,
-//         bio: userProfile.bio
-//       };
+     for (const userFolloweruid of userFollowerData.contact) {
+       const userProfile = await getUserProfile(userFolloweruid);
+       const playerInfo = {
+         id: userFolloweruid,
+         name: userProfile.name,
+         picture: userProfile.picture,
+         bio: userProfile.bio
+       };
 
-//       users.push(playerInfo);
-//     }
-//     return users;
-//   } catch (error) {
-//     console.error("Error fetching users by contact:", error);
-//     throw error;
-//   }
-// };
+       users.push(playerInfo);
+     }
+     return users;
+   } catch (error) {
+     console.error("Error fetching users by contact:", error);
+     throw error;
+   }
+ };
 
-export const updateProfileContact = async (uidFollowed: string, user: User) => {
+ export const updateProfileContact = async (uidFollowed: string, user: User) => {
   try {
     const userFollowerData = await getUserProfile(user.uid);
     if (userFollowerData && !userFollowerData.contact) {
       userFollowerData.contact = [];
     }
+
+    const updatedContact = Array.from(new Set([...userFollowerData.contact, uidFollowed]));
+
     const userRef = doc(firestore, "users", user.uid);
     updateDoc(userRef, {
-      contact: [...userFollowerData.contact, uidFollowed],
+      contact: updatedContact,
     });
   } catch (error) {
     console.error("Error updating the user: ", error);
